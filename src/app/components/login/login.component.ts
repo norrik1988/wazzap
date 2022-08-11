@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HotToastService } from '@ngneat/hot-toast';
 import { AuthService } from 'src/app/services/auth.service';
@@ -7,19 +7,22 @@ import { AuthService } from 'src/app/services/auth.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-
-  loginForm = new UntypedFormGroup({
-    email: new UntypedFormControl('', [Validators.required, Validators.email]),
-    password: new UntypedFormControl('', [Validators.required])
+  loginForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
   });
 
-  constructor(private authService: AuthService, private toast: HotToastService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private toast: HotToastService,
+    private router: Router,
+    private fb: NonNullableFormBuilder
+  ) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   get email() {
     return this.loginForm.get('email');
@@ -30,21 +33,23 @@ export class LoginComponent implements OnInit {
   }
 
   submit() {
-    if (!this.loginForm.valid) {
+    const { email, password } = this.loginForm.value;
+
+    if (!this.loginForm.valid || !email || !password) {
       return;
     }
 
-    const { email, password } = this.loginForm.value;
-    this.authService.login(email, password).pipe(
-      this.toast.observe({
-        success: 'Logged in successfully',
-        loading: 'Logging in...',
-        error: ({ message }) => `There was an error: ${message} `
-      })
-    ).subscribe(() => {
-      this.router.navigate(['/home']);
-    });
-
+    this.authService
+      .login(email, password)
+      .pipe(
+        this.toast.observe({
+          success: 'Logged in successfully',
+          loading: 'Logging in...',
+          error: ({ message }) => `There was an error: ${message} `,
+        })
+      )
+      .subscribe(() => {
+        this.router.navigate(['/home']);
+      });
   }
-
 }

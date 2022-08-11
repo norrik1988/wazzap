@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormControl, FormGroup, NonNullableFormBuilder } from '@angular/forms';
 import { HotToastService } from '@ngneat/hot-toast';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { switchMap, tap } from 'rxjs';
@@ -16,19 +16,20 @@ import { UsersService } from 'src/app/services/users.service';
 export class ProfileComponent implements OnInit {
   user$ = this.usersService.currentUserProfile$;
 
-  profileForm = new UntypedFormGroup({
-    uid: new UntypedFormControl(''),
-    displayName: new UntypedFormControl(''),
-    firstName: new UntypedFormControl(''),
-    lastName: new UntypedFormControl(''),
-    phone: new UntypedFormControl(''),
-    address: new UntypedFormControl(''),
+  profileForm = this.fb.group({
+    uid: [''],
+    displayName: [''],
+    firstName: [''],
+    lastName: [''],
+    phone: [''],
+    address: [''],
   });
 
   constructor(
     private imageUploadService: ImageUploadService,
     private toast: HotToastService,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private fb: NonNullableFormBuilder
   ) {}
 
   ngOnInit(): void {

@@ -1,17 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import {
   AbstractControl,
-  UntypedFormControl,
-  UntypedFormGroup,
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
   ValidationErrors,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HotToastService } from '@ngneat/hot-toast';
-import { forkJoin } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { ProfileUser } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
 
@@ -34,12 +33,12 @@ export function passwordsMatchValidator(): ValidatorFn {
   styleUrls: ['./sign-up.component.scss'],
 })
 export class SignUpComponent implements OnInit {
-  signUpForm = new UntypedFormGroup(
+  signUpForm = this.fb.group(
     {
-      name: new UntypedFormControl('', Validators.required),
-      email: new UntypedFormControl('', [Validators.required, Validators.email]),
-      password: new UntypedFormControl('', Validators.required),
-      confirmPassword: new UntypedFormControl('', Validators.required),
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+      confirmPassword: ['', Validators.required],
     },
     { validators: passwordsMatchValidator() }
   );
@@ -48,7 +47,8 @@ export class SignUpComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private toast: HotToastService,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private fb: NonNullableFormBuilder
   ) {}
 
   ngOnInit(): void {}
@@ -70,11 +70,12 @@ export class SignUpComponent implements OnInit {
   }
 
   submit() {
-    if (!this.signUpForm.valid) {
+    const { name, email, password } = this.signUpForm.value;
+
+    if (!this.signUpForm.valid || !name || !password || !email) {
       return;
     }
 
-    const { name, email, password } = this.signUpForm.value;
     this.authService
       .signUp(email, password)
       .pipe(

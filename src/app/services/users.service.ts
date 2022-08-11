@@ -32,12 +32,12 @@ export class UsersService {
   }
 
   addUser(user: ProfileUser): Observable<void> {
-    const ref = doc(this.firestore, 'users', user.uid);
+    const ref = doc(this.firestore, 'users', user.uid ?? '');
     return from(setDoc(ref, user));
   }
 
   updateUser(user: ProfileUser): Observable<void> {
-    const ref = doc(this.firestore, 'users', user.uid);
+    const ref = doc(this.firestore, 'users', user.uid ?? '');
     return from(updateDoc(ref, { ...user }));
   }
 }
