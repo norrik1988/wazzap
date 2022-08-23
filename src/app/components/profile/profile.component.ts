@@ -60,9 +60,14 @@ export class ProfileComponent implements OnInit {
   }
 
   saveProfile() {
-    const profileData = this.profileForm.value;
+    const { uid, ...data } = this.profileForm.value;
+
+    if (!uid) {
+      return;
+    }
+
     this.usersService
-      .updateUser(profileData)
+      .updateUser({ uid, ...data })
       .pipe(
         this.toast.observe({
           loading: 'Saving profile data...',
