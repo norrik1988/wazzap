@@ -114,5 +114,7 @@
       }
     }
   },
-  "defaultProject": "angular-sign-up"
+  "cli": {
+    "analytics": false
+  }
 }
