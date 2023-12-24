@@ -1,16 +1,15 @@
 <mat-toolbar color="primary">
-  Sign Up Flow with Firebase
-  <ng-container *ngIf="user$ | async as user; else loginButton">
+  Wazzap
+  <ng-container *ngIf="authService.currentUser$ | async as user; else loginButton">
     <button mat-button [matMenuTriggerFor]="userMenu">
-      <img
-        width="30"
-        height="30"
-        class="profile-image-toolbar"
-        [src]="user.photoURL ?? 'assets/images/image-placeholder.png'"
-      />
+    <mat-icon>account_circle</mat-icon>
       {{ user.displayName }}
       <mat-icon>expand_more</mat-icon>
     </button>
+    <!-- <button mat-button (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button> -->
   </ng-container>
   <ng-template #loginButton>
     <button mat-button routerLink="login">
@@ -20,15 +19,15 @@
   </ng-template>
 </mat-toolbar>
 
-<div class="content">
+<div>
   <router-outlet></router-outlet>
 </div>
 
 <mat-menu #userMenu="matMenu">
-  <button mat-menu-item routerLink="/profile">
+  <!-- <button mat-menu-item routerLink="/profile">
     <mat-icon>account_circle</mat-icon>
     Profile
-  </button>
+  </button> -->
   <button mat-menu-item (click)="logout()">
     <mat-icon>logout</mat-icon>
     Logout

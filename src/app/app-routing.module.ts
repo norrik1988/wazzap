@@ -14,6 +14,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
 const redirectLoggedInToHome = () => redirectLoggedInTo(['home']);
 
+
 const routes: Routes = [
   {
     path: '',

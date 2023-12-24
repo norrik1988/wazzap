@@ -5,16 +5,20 @@ import {
   docData,
   Firestore,
   getDoc,
+  query,
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
 import { filter, from, map, Observable, of, switchMap } from 'rxjs';
 import { ProfileUser } from '../models/user';
 import { AuthService } from './auth.service';
+import { collectionData } from 'rxfire/firestore';
 
 @Injectable({
   providedIn: 'root',
 })
+
+
 export class UsersService {
   constructor(private firestore: Firestore, private authService: AuthService) {}
 
@@ -29,6 +33,12 @@ export class UsersService {
         return docData(ref) as Observable<ProfileUser>;
       })
     );
+  }
+
+  get allUsers$(): Observable<ProfileUser[]> {
+    const ref = collection(this.firestore, 'users');
+    const queryAll = query(ref);
+    return collectionData(queryAll) as Observable<ProfileUser[]>
   }
 
   addUser(user: ProfileUser): Observable<void> {

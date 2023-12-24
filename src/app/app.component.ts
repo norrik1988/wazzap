@@ -12,7 +12,7 @@ export class AppComponent {
   user$ = this.usersService.currentUserProfile$;
 
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     public usersService: UsersService,
     private router: Router
   ) {}
