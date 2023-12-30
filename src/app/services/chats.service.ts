@@ -3,10 +3,10 @@ import { Firestore, addDoc } from '@angular/fire/firestore';
 import { ProfileUser } from '../models/user';
 import { Observable, concatMap, map, take } from 'rxjs';
 import { UsersService } from './users.service';
-import { collection, query, where } from 'firebase/firestore';
+import { Timestamp, collection, doc, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import { ref } from '@angular/fire/storage';
 import { collectionData } from 'rxfire/firestore';
-import { Chat } from '../models/chat';
+import { Chat, Message } from '../models/chat';
 
 @Injectable({
   providedIn: 'root'
@@ -55,4 +55,43 @@ addChatName(currentUserId: string, chats: Chat[]): Chat[] {
 
   return chats
 }
+
+isExistingChat(otherUserId: string): Observable<string | null> {
+      return this.myChats$.pipe(
+        take(1),
+        map(chats => {
+          
+          for(let i=0; i < chats.length; i++) {
+              if(chats[i].userIds.includes(otherUserId)) {
+                return chats[i].id;
+              }
+          }
+
+          return null;
+        })
+      )
+}
+
+addChatMessage (chatId: string, message: string): Observable<any> {
+  const ref = collection(this.firestore, 'chats', chatId, 'messages');
+  const chatRef = doc(this.firestore, 'chats', chatId);
+  const today = Timestamp.fromDate(new Date())
+
+  return this.usersService.currentUserProfile$.pipe(
+    take(1),
+    concatMap((user) => addDoc (ref, {
+      text: message,
+      senderId: user?.uid,
+      sentDate: today
+    })),
+    concatMap(() => updateDoc( chatRef, { lastMessage: message, lastMesageDate: today}))
+  )
+  }
+
+  getChatMessages$(chatId: string): Observable<Message[]> {
+    const ref = collection (this.firestore, 'chats', chatId, 'messages');
+    const queryAll = query(ref, orderBy('sentDate' ,'asc'))
+    return collectionData(queryAll) as Observable<Message[]>
+  }
+
 }

@@ -1,10 +1,11 @@
+import { Timestamp } from '@firebase/firestore';
 import { ProfileUser } from 'src/app/models/user';
 ;
 
 export interface Chat {
     id: string;
     lastMessge?: string;
-    lastMessageDate: string;
+    lastMessageDate?: Date & Timestamp;
     lastName?: string;
     userIds: string [];
     users: ProfileUser [];
@@ -18,6 +19,6 @@ export interface Chat {
   export interface Message {
         text: string;
         senderId: string;
-        sentDate: Date;
+        sentDate: Date & Timestamp;
 
   }
